@@ -56,6 +56,10 @@ QuadNode *geraQuadtree(Img* pic, float minError)
         return raiz;
     }
  
+QuadNode *geraQuadtree(Img* pic, float minError);
+{
+    return geraQuadtreeRecursivo(pic, 0, 0, pic->width, pic->height, minError);
+}
 // COMENTE a linha abaixo quando seu algoritmo ja estiver funcionando
 // Caso contrario, ele ira gerar uma arvore de teste com 3 nodos
 
