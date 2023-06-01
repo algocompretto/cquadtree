@@ -40,7 +40,22 @@ QuadNode *geraQuadtree(Img* pic, float minError)
     //////////////////////////////////////////////////////////////////////////
     // Implemente aqui o algoritmo que gera a quadtree, retornando o nodo raiz
     //////////////////////////////////////////////////////////////////////////
+    QuadNode *raiz = geraQuadtree(pic, minError);
+    {   
+        int novaLargura = width / 2;
+        int novaAltura = height / 2;
+        int x, y;
+        QuadNode *raiz = newNode(x, y, width, height);
+        raiz->status = PARCIAL;
 
+        raiz->NW = geraQuadtreeRecursivo(pic, x, y, novaLargura, novaAltura, minError);
+        raiz->NE = geraQuadtreeRecursivo(pic, x + novaLargura, y, novaLargura, novaAltura, minError);
+        raiz->SW = geraQuadtreeRecursivo(pic, x, y + novaAltura, novaLargura, novaAltura, minError);
+        raiz->SE = geraQuadtreeRecursivo(pic, x + novaLargura, y + novaAltura, novaLargura, novaAltura, minError);
+
+        return raiz;
+    }
+ 
 // COMENTE a linha abaixo quando seu algoritmo ja estiver funcionando
 // Caso contrario, ele ira gerar uma arvore de teste com 3 nodos
 
@@ -94,7 +109,7 @@ void clearTree(QuadNode *n)
         clearTree(n->SE);
         clearTree(n->SW);
     }
-    //printf("Liberando... %d - %.2f %.2f %.2f %.2f\n", n->status, n->x, n->y, n->width, n->height);
+    printf("Liberando... %d - %.2f %.2f %.2f %.2f\n", n->status, n->x, n->y, n->width, n->height);
     free(n);
 }
 
