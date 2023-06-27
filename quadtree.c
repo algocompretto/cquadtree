@@ -102,6 +102,27 @@ for (size_t i = 0; i < size; i++){
 }
 return new_pic;
 }
+/*
+ * Calculates the histogram of a region in an image.
+ * @param node The quadtree node representing the region.
+ * @param original_pic The original image.
+ * @param histogram An array to store the histogram.
+ */
+void calculate_histogram(QuadNode *node, Img *original_pic, long long *histogram)
+{
+    const int NUM_GRAY = 256;
+    RGBPixel(*pixels)[original_pic->width] = (RGBPixel(*)[original_pic->height])original_pic->img;
+    memset(histogram, 0, sizeof(long long) * NUM_GRAY);
+    for (size_t i = node->y; i < node->y + node->height; i++)
+    {
+        for (size_t j = node->x; j < node->x + node->width; j++)
+        {
+            RGBPixel *pixel = &pixels[i][j];
+            histogram[pixel->r]++;
+        }
+    }
+}
+
 QuadNode *geraQuadtree(Img *original_pic, float minError)
 {
     return NULL;
