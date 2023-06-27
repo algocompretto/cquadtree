@@ -84,7 +84,24 @@ int calculate_region_error(unsigned int avg_intensity, QuadNode *node, Img *orig
     error = sqrt(sum / size);
     return error;
 }
-
+//Img *grayscale_img = convert_to_grayscale(original_pic);
+    Img *convert_to_grayscale(Img *original_pic){
+    Img *new_pic = malloc(sizeof(Img));
+    new_pic->width = original_pic->width;
+    new_pic->height = original_pic->height;
+    size_t size = original_pic->width * original_pic->height;
+    new_pic->img = malloc(size * sizeof(RGBPixel));
+    RGBPixel *pixels = (RGBPixel *)original_pic->img;
+    RGBPixel *new_pixels = (RGBPixel *)new_pic->img;
+  
+for (size_t i = 0; i < size; i++){
+    unsigned int intensity = (unsigned int)(0.3 * pixels[i].r + 0.59 * pixels[i].g + 0.11 * pixels[i].b);
+    new_pixels[i].r = intensity;
+    new_pixels[i].g = intensity;
+    new_pixels[i].b = intensity;
+}
+return new_pic;
+}
 QuadNode *geraQuadtree(Img *original_pic, float minError)
 {
     return NULL;
