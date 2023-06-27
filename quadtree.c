@@ -122,7 +122,22 @@ void calculate_histogram(QuadNode *node, Img *original_pic, long long *histogram
         }
     }
 }
+/**
+ * Calculates the average intensity of a histogram.
+ *
+ * @param histogram The histogram.
+ * @param size The size of the histogram.
+ * @return The average intensity value.
+ */
 
+unsigned int calculate_average_intensity(long long *histogram, int size)
+{
+    int sum = 0;
+    for (size_t i = 0; i < 256; i++)
+        sum += histogram[i] * i;
+    sum /= size;
+    return (unsigned int)sum;
+}
 QuadNode *geraQuadtree(Img *original_pic, float minError)
 {
     return NULL;
