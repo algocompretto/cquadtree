@@ -153,20 +153,20 @@ QuadNode *gera_quadtree(Img *grayscale_img, float minError, int x, int y, int wi
     calculate_histogram(root, grayscale_img, histogram);
     int size = root->height * root->width;
     unsigned int intensity = calculate_average_intensity(histogram, size);
-    int halfWidth = width / 2;
-    int halfHeight = height / 2;
+    int half_width = width / 2;
+    int half_height = height / 2;
 
-    if (halfHeight <= 1 || halfWidth <= 1 || calculate_region_error(intensity, root, grayscale_img) <= minError)
+    if (half_height <= 1 || half_width <= 1 || calculate_region_error(intensity, root, grayscale_img) <= minError)
     {
         root->status = CHEIO;
         return root;
     }
 
     root->status = PARCIAL;
-    root->NW = gera_quadtree(grayscale_img, minError, x, y, halfWidth, halfHeight, original_pic);
-    root->NE = gera_quadtree(grayscale_img, minError, x + halfWidth, y, halfWidth, halfHeight, original_pic);
-    root->SW = gera_quadtree(grayscale_img, minError, x, y + halfHeight, halfWidth, halfHeight, original_pic);
-    root->SE = gera_quadtree(grayscale_img, minError, x + halfWidth, y + halfHeight, halfWidth, halfHeight, original_pic);
+    root->NW = gera_quadtree(grayscale_img, minError, x, y, half_width, half_height, original_pic);
+    root->NE = gera_quadtree(grayscale_img, minError, x + half_width, y, half_width, half_height, original_pic);
+    root->SW = gera_quadtree(grayscale_img, minError, x, y + half_height, half_width, half_height, original_pic);
+    root->SE = gera_quadtree(grayscale_img, minError, x + half_width, y + half_height, half_width, half_height, original_pic);
     return root;
 }
 
