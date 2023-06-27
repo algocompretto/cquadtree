@@ -36,7 +36,9 @@ QuadNode *newNode(int x, int y, int width, int height)
 int calculate_average_color(QuadNode *node, Img *original_pic)
 {
     RGBPixel(*pixels)[original_pic->width] = (RGBPixel(*)[original_pic->width])original_pic->img;
-    unsigned int totalR = totalG = totalB = 0;
+    unsigned int totalR = 0;
+    unsigned int totalG = 0;
+    unsigned int totalB = 0;
 
     size_t node_height = node->height;
     size_t node_width = node->width;
@@ -66,10 +68,11 @@ int calculate_average_color(QuadNode *node, Img *original_pic)
  * @param original_pic The original image.
  * @return The error value.
  */
-
 int calculate_region_error(unsigned int avg_intensity, QuadNode *node, Img *original_pic)
 {
-    float error = sum = difference = 0.0;
+    float error = 0.0;
+    float sum = 0.0;
+    float difference = 0.0;
     int size = node->width * node->height;
     RGBPixel(*pixels)[original_pic->width] = (RGBPixel(*)[original_pic->width])original_pic->img;
     for (int i = node->y; i < node->y + node->height; i++)
@@ -84,8 +87,9 @@ int calculate_region_error(unsigned int avg_intensity, QuadNode *node, Img *orig
     error = sqrt(sum / size);
     return error;
 }
-//Img *grayscale_img = convert_to_grayscale(original_pic);
-    Img *convert_to_grayscale(Img *original_pic){
+
+Img *convert_to_grayscale(Img *original_pic)
+{
     Img *new_pic = malloc(sizeof(Img));
     new_pic->width = original_pic->width;
     new_pic->height = original_pic->height;
@@ -93,15 +97,17 @@ int calculate_region_error(unsigned int avg_intensity, QuadNode *node, Img *orig
     new_pic->img = malloc(size * sizeof(RGBPixel));
     RGBPixel *pixels = (RGBPixel *)original_pic->img;
     RGBPixel *new_pixels = (RGBPixel *)new_pic->img;
-  
-for (size_t i = 0; i < size; i++){
-    unsigned int intensity = (unsigned int)(0.3 * pixels[i].r + 0.59 * pixels[i].g + 0.11 * pixels[i].b);
-    new_pixels[i].r = intensity;
-    new_pixels[i].g = intensity;
-    new_pixels[i].b = intensity;
+
+    for (size_t i = 0; i < size; i++)
+    {
+        unsigned int intensity = (unsigned int)(0.3 * pixels[i].r + 0.59 * pixels[i].g + 0.11 * pixels[i].b);
+        new_pixels[i].r = intensity;
+        new_pixels[i].g = intensity;
+        new_pixels[i].b = intensity;
+    }
+    return new_pic;
 }
-return new_pic;
-}
+
 /*
  * Calculates the histogram of a region in an image.
  * @param node The quadtree node representing the region.
@@ -122,6 +128,7 @@ void calculate_histogram(QuadNode *node, Img *original_pic, long long *histogram
         }
     }
 }
+
 /**
  * Calculates the average intensity of a histogram.
  *
@@ -129,7 +136,6 @@ void calculate_histogram(QuadNode *node, Img *original_pic, long long *histogram
  * @param size The size of the histogram.
  * @return The average intensity value.
  */
-
 unsigned int calculate_average_intensity(long long *histogram, int size)
 {
     int sum = 0;
@@ -138,9 +144,36 @@ unsigned int calculate_average_intensity(long long *histogram, int size)
     sum /= size;
     return (unsigned int)sum;
 }
+
+QuadNode *gera_quadtree(Img *grayscale_img, float minError, int x, int y, int width, int height, Img *original_pic)
+{
+    QuadNode *root = newNode(x, y, width, height);
+    calculate_average_color(root, original_pic);
+    long long *histogram = malloc(256 * sizeof(long long));
+    calculate_histogram(root, grayscale_img, histogram);
+    int size = root->height * root->width;
+    unsigned int intensity = calculate_average_intensity(histogram, size);
+    int halfWidth = width / 2;
+    int halfHeight = height / 2;
+
+    if (halfHeight <= 1 || halfWidth <= 1 || calculate_region_error(intensity, root, grayscale_img) <= minError)
+    {
+        root->status = CHEIO;
+        return root;
+    }
+
+    root->status = PARCIAL;
+    root->NW = gera_quadtree(grayscale_img, minError, x, y, halfWidth, halfHeight, original_pic);
+    root->NE = gera_quadtree(grayscale_img, minError, x + halfWidth, y, halfWidth, halfHeight, original_pic);
+    root->SW = gera_quadtree(grayscale_img, minError, x, y + halfHeight, halfWidth, halfHeight, original_pic);
+    root->SE = gera_quadtree(grayscale_img, minError, x + halfWidth, y + halfHeight, halfWidth, halfHeight, original_pic);
+    return root;
+}
+
 QuadNode *geraQuadtree(Img *original_pic, float minError)
 {
-    return NULL;
+    Img *grayscale_img = convert_to_grayscale(original_pic);
+    gera_quadtree(grayscale_img, minError, 0, 0, grayscale_img->width, grayscale_img->height, original_pic);
 }
 
 // Limpa a memória ocupada pela árvore
