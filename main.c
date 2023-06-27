@@ -32,7 +32,7 @@ GLuint tex;
 QuadNode *raiz;
 Img pic;
 
-int erro=20;     // nível de erro mínimo inicial
+int erro=10;     // nível de erro mínimo inicial
 
 int main(int argc, char **argv)
 {
