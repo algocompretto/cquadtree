@@ -27,12 +27,12 @@ QuadNode *newNode(int x, int y, int width, int height)
 }
 
 /**
- * Calculates the average color of a region in an image.
- *
- * @param node The quadtree node representing the region.
- * @param original_pic The original image.
- * @return 0 if successful.
- */
+ * Calculates the average color of a region in an image.
+ *
+ * @param node The quadtree node representing the region.
+ * @param original_pic The original image.
+ * @return 0 if successful.
+ */
 int calculate_average_color(QuadNode *node, Img *original_pic)
 {
     RGBPixel(*pixels)[original_pic->width] = (RGBPixel(*)[original_pic->width])original_pic->img;
@@ -59,6 +59,32 @@ int calculate_average_color(QuadNode *node, Img *original_pic)
     return 0;
 }
 
+/**
+ * Calculates the error of a region in an image.
+ * @param avg_intensity The average intensity of the region.
+ * @param node The quadtree node representing the region.
+ * @param original_pic The original image.
+ * @return The error value.
+ */
+
+int calculate_region_error(unsigned int avg_intensity, QuadNode *node, Img *original_pic)
+{
+    float error = sum = difference = 0.0;
+    int size = node->width * node->height;
+    RGBPixel(*pixels)[original_pic->width] = (RGBPixel(*)[original_pic->width])original_pic->img;
+    for (int i = node->y; i < node->y + node->height; i++)
+    {
+        for (int j = node->x; j < node->x + node->width; j++)
+        {
+            RGBPixel *pixel = &pixels[i][j];
+            difference = pow((int)(pixel->r - avg_intensity), 2);
+            sum += difference;
+        }
+    }
+    error = sqrt(sum / size);
+    return error;
+}
+
 QuadNode *geraQuadtree(Img *original_pic, float minError)
 {
     return NULL;
@@ -76,7 +102,6 @@ void clearTree(QuadNode *n)
         clearTree(n->SE);
         clearTree(n->SW);
     }
-    // printf("Liberando... %d - %.2f %.2f %.2f %.2f\n", n->status, n->x, n->y, n->width, n->height);
     free(n);
 }
 
